@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import Link from "next/link";
@@ -13,7 +13,7 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const AppLayout = ({ children }) => {
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const { isLoggedIn } = useSelector((state) => state.user);
 
   return (
     <div>
@@ -48,7 +48,7 @@ const AppLayout = ({ children }) => {
           <a
             href="https://github.com/qkrwltn8976"
             target="_blank"
-            rel="_norefferer noopener"
+            rel="noreferrer noopener"
           >
             Made by Earthp
           </a>
