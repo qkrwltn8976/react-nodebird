@@ -1,11 +1,9 @@
-import { all, call, fork, take } from "redux-saga/effects";
+import userSaga from "./user";
+import postSaga from "./post";
+import { all, fork } from "redux-saga/effects";
 
-// function* logIn() {
-//   yield call(loginApi()); // call - 동기, fork - 빋
-// }
-// function* watchLogin() {
-//   yield take("LOG_IN", logIn);
-// }
+// eventListener와 비슷한 역할
+// fork(call): 함수 실행, all: 동시 실행
 export default function* rootSaga() {
-  //   yield all([fork(watchLogin)]);
+  yield all([fork(userSaga), fork(postSaga)]);
 }
