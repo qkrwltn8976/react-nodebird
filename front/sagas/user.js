@@ -1,5 +1,5 @@
 import axios from "axios";
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
 import {
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
@@ -19,62 +19,58 @@ import {
 } from "../reducers/user";
 
 function loginAPI(data) {
-  return axios.post("/API/login", data);
+  return axios.post("/user/login", data);
 }
-
-function logOutAPI() {
-  return axios.post("/API/login");
-}
-
-function signUpAPI() {
-  return axios.post("/API/signUp");
-}
-
 function* logIn(action) {
   try {
-    // const result = yield call(loginAPI, action.data); // call - 동기 함수 호출 (await/then), fork - 비동기 함수 호출
-    yield delay(1000);
+    const result = yield call(loginAPI, action.data); // call - 동기 함수 호출 (await/then), fork - 비동기 함수 호출
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     // put: dispatch
     yield put({
       type: LOG_IN_FAILURE,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
+}
+
+function logOutAPI() {
+  return axios.post("/user/logout");
 }
 
 function* logOut() {
   try {
-    // const result = yield call(logOutAPI);
-    yield delay(1000);
+    yield call(logOutAPI);
     yield put({
       type: LOG_OUT_SUCCESS,
-      // data: result.data,
     });
   } catch (err) {
     yield put({
       type: LOG_OUT_FAILURE,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
 
-function* signUp() {
+function signUpAPI(data) {
+  return axios.post("/user", data);
+}
+
+function* signUp(action) {
   try {
-    // const result = yield call(logOutAPI);
-    yield delay(1000);
+    const result = yield call(signUpAPI, action.data);
+    console.log(result);
     yield put({
       type: SIGN_UP_SUCCESS,
-      // data: result.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
       type: SIGN_UP_FAILURE,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
@@ -90,7 +86,7 @@ function* follow(action) {
   } catch (err) {
     yield put({
       type: FOLLOW_FAILURE,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
@@ -106,7 +102,7 @@ function* unfollow(action) {
   } catch (err) {
     yield put({
       type: UNFOLLOW_FAILURE,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }

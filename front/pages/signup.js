@@ -1,11 +1,13 @@
 import React, { useCallback, useState } from "react";
 import Head from "next/head";
+import Router from "next/router";
 import styled from "styled-components";
 import AppLayout from "../components/AppLayout";
 import { Button, Checkbox, Form, Input } from "antd";
 import useInput from "../hooks/useInput";
 import { SIGN_UP_REQUEST } from "../reducers/user";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const ErrorMessage = styled.div`
   color: red;
@@ -13,7 +15,27 @@ const ErrorMessage = styled.div`
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const { signUpLoading } = useSelector((state) => state.user);
+  const { signUpLoading, signUpDone, signUpError, me } = useSelector(
+    (state) => state.user
+  );
+
+  useEffect(() => {
+    if (me && me.id) {
+      Router.replace("/");
+    }
+  }, [me && me.id]);
+
+  useEffect(() => {
+    if (signUpDone) {
+      Router.replace("/");
+    }
+  }, [signUpDone]);
+
+  useEffect(() => {
+    if (signUpError) {
+      alert(signUpError);
+    }
+  }, [signUpError]);
 
   const [email, onChangeEmail] = useInput("");
   const [nickname, onChangeNickname] = useInput("");
@@ -47,9 +69,9 @@ const Signup = () => {
 
     dispatch({
       type: SIGN_UP_REQUEST,
-      data: { email, password, passwordCheck, term },
+      data: { email, nickname, password, passwordCheck, term },
     });
-  }, [email, password, passwordCheck, term]);
+  }, [email, nickname, password, passwordCheck, term]);
 
   return (
     <AppLayout>
@@ -84,6 +106,7 @@ const Signup = () => {
           <br />
           <Input
             name="user-password"
+            type="password"
             value={password}
             required
             onChange={onChangePassword}
@@ -94,6 +117,7 @@ const Signup = () => {
           <br />
           <Input
             name="user-password-check"
+            type="password"
             value={passwordCheck}
             required
             onChange={onChangePasswordCheck}
