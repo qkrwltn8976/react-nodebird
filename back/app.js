@@ -4,8 +4,11 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const dotenv = require("dotenv");
+const morgan = require("morgan");
+
 const userRouter = require("./routes/user");
 const postRouter = require("./routes/post");
+const postsRouter = require("./routes/posts");
 const db = require("./models");
 const passportConfig = require("./passport");
 
@@ -19,10 +22,12 @@ db.sequelize
   })
   .catch(console.error);
 passportConfig();
+
+app.use(morgan("dev"));
 app.use(
   cors({
     origin: true, // * 대신 보낸 곳의 주소가 자동으로 들어가 편리
-    // credentials: false
+    credentials: true, // cookie 같이 전달 가능
   })
 );
 app.use(express.json());
@@ -38,16 +43,13 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/", (req, res) => {
-  res.send("hello express");
-});
-
-app.get("/api", (req, res) => {
-  res.send("hello api");
+app.use((err, req, res, next) => {
+  // 에러 처리 미들웨어
 });
 
 app.use("/user", userRouter);
 app.use("/post", postRouter);
+app.use("/posts", postsRouter);
 
 app.listen(3065, () => {
   console.log("서버 실행 중");

@@ -16,11 +16,34 @@ import {
   UNFOLLOW_FAILURE,
   FOLLOW_REQUEST,
   UNFOLLOW_REQUEST,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
 } from "../reducers/user";
+
+function loadMyInfoAPI(data) {
+  return axios.get("/user", data);
+}
+
+function* loadMyInfo(action) {
+  try {
+    const result = yield call(loadMyInfoAPI, action.data);
+    yield put({
+      type: LOAD_MY_INFO_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_MY_INFO_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
 
 function loginAPI(data) {
   return axios.post("/user/login", data);
 }
+
 function* logIn(action) {
   try {
     const result = yield call(loginAPI, action.data); // call - 동기 함수 호출 (await/then), fork - 비동기 함수 호출
@@ -107,6 +130,10 @@ function* unfollow(action) {
   }
 }
 
+function* watchLoadMyInfo() {
+  yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
+}
+
 function* watchLogIn() {
   // take: 일회성
   // takeLatest: 프론트 기준 여러 번 요청 호출 시에 마지막 요청만 실행 (응답만 취소되고 요청은 취소되지 않음)
@@ -132,6 +159,7 @@ function* watchUnfollow() {
 
 export default function* userSaga() {
   yield all([
+    fork(watchLoadMyInfo),
     fork(watchLogIn),
     fork(watchLogOut),
     fork(watchSignUp),
