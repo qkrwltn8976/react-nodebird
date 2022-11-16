@@ -19,7 +19,7 @@ import {
   RETWEET_REQUEST,
 } from "../reducers/post";
 import FollowButton from "./FollowButton";
-import { useEffect } from "react";
+
 const PostCard = ({ post }) => {
   const dispatch = useDispatch();
 
