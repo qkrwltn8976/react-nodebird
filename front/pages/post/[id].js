@@ -37,7 +37,6 @@ const Post = () => {
           }
         />
         <meta property="og:url" content={`https://nodebird.com/post/${id}`} />
-        <div>{id}번 게시글</div>
       </Head>
       <PostCard post={singlePost} />
     </AppLayout>

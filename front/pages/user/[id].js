@@ -18,9 +18,13 @@ const User = () => {
   const router = useRouter();
   const { id } = router.query;
   const { userInfo } = useSelector((state) => state.user);
-  const { mainPosts, hasMorePosts, loadUserPostsLoading } = useSelector(
+  const { mainPosts, hasMorePosts, loadPostsLoading } = useSelector(
     (state) => state.post
   );
+
+  // if (router.isFallback) {
+  //   return <div>로딩중...</div>;
+  // }
 
   useEffect(() => {
     function onScroll() {
@@ -28,7 +32,7 @@ const User = () => {
         window.scrollY + document.documentElement.clientHeight >
         document.documentElement.scrollHeight - 300
       ) {
-        if (hasMorePosts && !loadUserPostsLoading) {
+        if (hasMorePosts && !loadPostsLoading) {
           dispatch({
             type: LOAD_USER_POSTS_REQUEST,
             lastId: mainPosts[mainPosts.length - 1]?.id,
@@ -42,50 +46,58 @@ const User = () => {
     return () => {
       window.removeEventListener("scroll", onScroll);
     };
-  }, [hasMorePosts, loadUserPostsLoading]);
+  }, [mainPosts.length, hasMorePosts, id, loadPostsLoading]);
 
   return (
     <AppLayout>
-      <Head>
-        <title>{userInfo.nickname}님의 글</title>
-        <meta name="description" content={userInfo.nickname} />
-        <meta property="og:title" content={`${userInfo.nickname}님의 게시글`} />
-        <meta
-          property="og:description"
-          content={`${userInfo.nickname}님의 게시글`}
-        />
-        <meta
-          property="og:image"
-          content={"https://nodebird.com/favicon.ico"}
-        />
-        <meta property="og:url" content={`https://nodebird.com/user/${id}`} />
-        <div>{id}번 게시글</div>
-      </Head>
       {userInfo && (
-        <Card
-          actions={[
-            <div key="twit">
-              짹짹
-              <br />
-              {userInfo.Posts}
-            </div>,
-            <div key="followings">
-              팔로잉
-              <br />
-              {userInfo.Followings}
-            </div>,
-            <div key="followers">
-              팔로워
-              <br />
-              {userInfo.Followers}
-            </div>,
-          ]}
-        >
-          <Card.Meta
-            avatar={<Avatar>{userInfo.nickname[0]}</Avatar>}
-            title={userInfo.nickname}
-          />
-        </Card>
+        <>
+          {" "}
+          <Head>
+            <title>{userInfo.nickname}님의 글</title>
+            <meta name="description" content={userInfo.nickname} />
+            <meta
+              property="og:title"
+              content={`${userInfo.nickname}님의 게시글`}
+            />
+            <meta
+              property="og:description"
+              content={`${userInfo.nickname}님의 게시글`}
+            />
+            <meta
+              property="og:image"
+              content={"https://nodebird.com/favicon.ico"}
+            />
+            <meta
+              property="og:url"
+              content={`https://nodebird.com/user/${id}`}
+            />
+          </Head>
+          <Card
+            actions={[
+              <div key="twit">
+                짹짹
+                <br />
+                {userInfo.Posts}
+              </div>,
+              <div key="followings">
+                팔로잉
+                <br />
+                {userInfo.Followings}
+              </div>,
+              <div key="followers">
+                팔로워
+                <br />
+                {userInfo.Followers}
+              </div>,
+            ]}
+          >
+            <Card.Meta
+              avatar={<Avatar>{userInfo.nickname[0]}</Avatar>}
+              title={userInfo.nickname}
+            />
+          </Card>
+        </>
       )}
       {mainPosts.map((post) => (
         <PostCard key={post.id} post={post} />
@@ -94,6 +106,17 @@ const User = () => {
   );
 };
 
+// export async function getStaticPaths() {
+//   return {
+//     paths: [
+//       {
+//         params: { id: "1" },
+//         params: { id: "2" },
+//       },
+//     ],
+//     fallback: true,
+//   };
+// }
 // getServerSideProps: 접속할 때마다 데이터가 바뀌어야 하는 경우
 export const getServerSideProps = wrapper.getServerSideProps(
   async (context) => {

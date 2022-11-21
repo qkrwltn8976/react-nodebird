@@ -6,6 +6,7 @@ import AppLayout from "../components/AppLayout";
 import { END } from "redux-saga";
 import wrapper from "../store/configureStore";
 import Head from "next/head";
+import Link from "next/link";
 
 const About = () => {
   const { userInfo } = useSelector((state) => state.user);
@@ -20,9 +21,13 @@ const About = () => {
         <Card
           actions={[
             <div key="twit">
-              짹짹
-              <br />
-              {userInfo.Posts}
+              <Link href={`/user/${userInfo.id}`}>
+                <a>
+                  짹짹
+                  <br />
+                  {userInfo.Posts}
+                </a>
+              </Link>
             </div>,
             <div key="followings">
               팔로잉
@@ -37,7 +42,13 @@ const About = () => {
           ]}
         >
           <Card.Meta
-            avatar={<Avatar>{userInfo.nickname[0]}</Avatar>}
+            avatar={
+              <Link href={`/user/${userInfo.id}`}>
+                <a>
+                  <Avatar>{userInfo.nickname[0]}</Avatar>
+                </a>
+              </Link>
+            }
             title={userInfo.nickname}
             description="노드버드 매니아"
           />

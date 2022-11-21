@@ -179,7 +179,6 @@ function loadUserPostsAPI(data, lastId) {
 function* loadUserPosts(action) {
   try {
     const result = yield call(loadUserPostsAPI, action.data, action.lastId);
-
     yield put({
       type: LOAD_USER_POSTS_SUCCESS,
       data: result.data,
@@ -194,7 +193,9 @@ function* loadUserPosts(action) {
 }
 
 function loadHashtagPostsAPI(data, lastId) {
-  return axios.get(`/hashtag/${data}?lastId=${lastId || 0}`);
+  return axios.get(
+    `/hashtag/${encodeURIComponent(data)}?lastId=${lastId || 0}`
+  );
 }
 
 function* loadHashtagPosts(action) {
